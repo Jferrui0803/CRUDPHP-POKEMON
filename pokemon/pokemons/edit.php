@@ -166,7 +166,7 @@ $connection = null;
                             <input value="<?= $ability ?>" required type="text" class="form-control" id="ability" name="ability" placeholder="pokemon ability">
                         </div>
                         <div class="form-group">
-                            <label for="hp">pokemons ability</label>
+                            <label for="hp">pokemons hp</label>
                             <input value="<?= $hp ?>" required type="text" class="form-control" id="hp" name="hp" placeholder="pokemon hp">
                         </div>
                         <div class="form-group">
