@@ -65,7 +65,7 @@ if (isset($_SESSION['old']['attack'])) {
     <main role="main">
         <div class="jumbotron">
             <div class="container">
-                <h4 class="display-4">Add Pokémon</h4>
+                <h4 class="display-4">CREATE YOUR POKEMON</h4>
             </div>
         </div>
         <div class="container">

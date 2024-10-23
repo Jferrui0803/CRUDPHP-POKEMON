@@ -122,7 +122,7 @@ $connection = null;
                         <a class="nav-link" href="..">home</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="./">pokemons</a>
+                        <a class="nav-link" href="./">Pokemons</a>
                     </li>
                 </ul>
             </div>
@@ -130,7 +130,7 @@ $connection = null;
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">pokemonss</h4>
+                    <h4 class="display-4">EDIT YOUR POKEMONS</h4>
                 </div>
             </div>
             <div class="container">

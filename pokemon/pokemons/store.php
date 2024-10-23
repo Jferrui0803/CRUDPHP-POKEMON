@@ -75,13 +75,13 @@ if (isset($_POST['name']) && isset($_POST['type']) && isset($_POST['ability']) &
             $resultado = $connection->lastInsertId();
             $url = 'index.php?op=insertpokemon&result=' . $resultado;
         } catch (PDOException $e) {
-            // Manejo de error
+            
             
         }
     }
 }
 
-// En caso de error, guardar los datos antiguos en la sesión
+
 if ($resultado == 0) {
     $_SESSION['old']['name'] = $name;
     $_SESSION['old']['type'] = $type;

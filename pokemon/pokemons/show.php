@@ -72,7 +72,7 @@ $connection = null;
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">Pokemon Details</h4>
+                    <h4 class="display-4">VIEW YOUR POKEMON STATS</h4>
                 </div>
             </div>
             <div class="container">

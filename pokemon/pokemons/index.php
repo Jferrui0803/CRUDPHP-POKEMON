@@ -62,7 +62,7 @@ try {
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">pokemons</h4>
+                    <h4 class="display-4">POKEDEX</h4>
                 </div>
             </div>
             <div class="container">
@@ -84,7 +84,7 @@ try {
                 }
                 ?>
                 <div class="row">
-                    <h3>Pokemon list</h3>
+                    <h3>These are your Pokemons</h3>
                 </div>
                 <table class="table table-striped table-hover" id="tablaPokemons">
                     <thead>
