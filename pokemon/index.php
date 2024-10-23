@@ -1,5 +1,7 @@
+
 <?php
 session_start();
+
 ?>
 <!doctype html>
 <html>
@@ -17,10 +19,10 @@ session_start();
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="./">Home</a>
+                        <a class="nav-link" href="./">home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./product">Pokemon</a>
+                        <a class="nav-link" href="./pokemons">pokemons</a>
                     </li>
                 </ul>
             </div>
@@ -28,37 +30,38 @@ session_start();
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">POKEMONS</h4>
+                    <h4 class="display-4">main</h4>
                 </div>
             </div>
             <div class="container">
                 <?php
-                if (isset($_GET['op']) && isset($_GET['result'])) {
+                if(isset($_GET['op']) && isset($_GET['result'])) {
                     ?>
                     <div class="alert alert-primary" role="alert">
-                        result: <?= htmlspecialchars($_GET['op']) . ' ' . htmlspecialchars($_GET['result']) ?>
+                        result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
                     </div>
                     <?php
                 }
                 ?>
                 <div class="row">
-                    <h3>LOOK THIS POKEMONS.</h3>
+                    <h3>Pokemons.</h3>
                 </div>
                 <div class="row">
                     <?php
-                    if (isset($_SESSION['user'])) {
+                    if(isset($_SESSION['user'])) {
                         ?>
                         <a href="user/logout.php" class="btn btn-success">log out</a>
-                        <a href="pokemon/manage.php" class="btn btn-success">manage Pokémon</a>
                         <?php
                     } else {
                         ?>
-                        <a href="user/login.php" class="btn btn-success">log in</a>
+                        <a href="user/login.php?user=even" class="btn btn-success">log in</a>
+                        &nbsp;
+                       
                         <?php
                     }
                     ?>
                     &nbsp;
-                    <a href="pokemons/create.php" class="btn btn-success">Manage Pokemons</a>
+                    <a href="./pokemons" class="btn btn-success">pokemons</a>
                 </div>
                 <hr>
             </div>

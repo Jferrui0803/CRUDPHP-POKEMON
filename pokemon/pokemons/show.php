@@ -96,9 +96,6 @@ $connection = null;
                         <strong>Pokemon Attack:</strong> <?= htmlspecialchars($fila['attack']) ?>
                     </div>
                     <div class="form-group">
-                        <strong>Pokemon Defense:</strong> <?= htmlspecialchars($fila['defense']) ?>
-                    </div>
-                    <div class="form-group">
                         <a href="./" class="btn btn-secondary">Back</a>
                     </div>
                 </div>

@@ -4,82 +4,50 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['user'])) {
-    header('Location: ./');
+    header('Location:.');
     exit;
 }
 
-// Conexión a la base de datos
-try {
-    $connection = new \PDO(
-        'mysql:host=localhost;dbname=pokemons',
-        'root',
-        'FERNANDO',
-        array(
-            PDO::ATTR_PERSISTENT => true,
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
-        )
-    );
-} catch (PDOException $e) {
-    header('Location: ../');
-    exit;
+$name = '';
+$type = '';
+$ability = '';
+$hp = '';
+$attack = '';
+
+
+if (isset($_SESSION['old']['name'])) {
+    $name = $_SESSION['old']['name'];
+    unset($_SESSION['old']['name']);
+}
+if (isset($_SESSION['old']['type'])) {
+    $type = $_SESSION['old']['type'];
+    unset($_SESSION['old']['type']);
+}
+if (isset($_SESSION['old']['ability'])) {
+    $ability = $_SESSION['old']['ability'];
+    unset($_SESSION['old']['ability']);
+}
+if (isset($_SESSION['old']['hp'])) {
+    $hp = $_SESSION['old']['hp'];
+    unset($_SESSION['old']['hp']);
+}
+if (isset($_SESSION['old']['attack'])) {
+    $attack = $_SESSION['old']['attack'];
+    unset($_SESSION['old']['attack']);
 }
 
-// Manejo del formulario de creación de Pokémon
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtener datos del formulario
-    $name = $_POST['name'] ?? '';
-    $type = $_POST['type'] ?? '';
-    $ability = $_POST['ability'] ?? '';
-    $hp = $_POST['hp'] ?? 0;
-    $attack = $_POST['attack'] ?? 0;
-    $defense = $_POST['defense'] ?? 0;
-
-    // Validar datos
-    if ($name && $type && $ability && is_numeric($hp) && is_numeric($attack) && is_numeric($defense)) {
-        // Insertar en la base de datos
-        $sql = 'INSERT INTO pokemon (name, type, ability, hp, attack, defense) VALUES (:name, :type, :ability, :hp, :attack, :defense)';
-        $sentence = $connection->prepare($sql);
-        $sentence->bindValue(':name', $name);
-        $sentence->bindValue(':type', $type);
-        $sentence->bindValue(':ability', $ability);
-        $sentence->bindValue(':hp', $hp);
-        $sentence->bindValue(':attack', $attack);
-        $sentence->bindValue(':defense', $defense);
-
-        try {
-            $sentence->execute();
-            $url = './?op=createpokemon&result=success';
-            header('Location: ' . $url);
-            exit;
-        } catch (PDOException $e) {
-            $url = './?op=createpokemon&result=error';
-            header('Location: ' . $url);
-            exit;
-        }
-    } else {
-        $url = './?op=createpokemon&result=validation';
-        header('Location: ' . $url);
-        exit;
-    }
-}
-
-// Cerrar la conexión
-$connection = null;
 ?>
-
 <!doctype html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Create Pokemon</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Pokédex</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="..">dwes</a>
+        <a class="navbar-brand" href="..">Pokédex</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -89,7 +57,7 @@ $connection = null;
                     <a class="nav-link" href="..">Home</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="./">Pokemons</a>
+                    <a class="nav-link" href="./">Pokémon</a>
                 </li>
             </ul>
         </div>
@@ -97,43 +65,60 @@ $connection = null;
     <main role="main">
         <div class="jumbotron">
             <div class="container">
-                <h4 class="display-4">Create New Pokemon</h4>
+                <h4 class="display-4">Add Pokémon</h4>
             </div>
         </div>
         <div class="container">
-            <form action="create.php" method="post">
-                <div class="form-group">
-                    <label for="name">Pokemon Name</label>
-                    <input required type="text" class="form-control" id="name" name="name" placeholder="Pokemon Name">
-                </div>
-                <div class="form-group">
-                    <label for="type">Pokemon Type</label>
-                    <input required type="text" class="form-control" id="type" name="type" placeholder="Pokemon Type">
-                </div>
-                <div class="form-group">
-                    <label for="ability">Pokemon Ability</label>
-                    <input required type="text" class="form-control" id="ability" name="ability" placeholder="Pokemon Ability">
-                </div>
-                <div class="form-group">
-                    <label for="hp">Pokemon HP</label>
-                    <input required type="number" class="form-control" id="hp" name="hp" placeholder="Pokemon HP" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="attack">Pokemon Attack</label>
-                    <input required type="number" class="form-control" id="attack" name="attack" placeholder="Pokemon Attack" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="defense">Pokemon Defense</label>
-                    <input required type="number" class="form-control" id="defense" name="defense" placeholder="Pokemon Defense" min="0">
-                </div>
-                <button type="submit" class="btn btn-primary">Create</button>
-            </form>
+            <?php
+            if (isset($_GET['op']) && isset($_GET['result'])) {
+                if ($_GET['result'] > 0) {
+                    ?>
+                    <div class="alert alert-primary" role="alert">
+                        result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                    </div>
+                    <?php 
+                } else {
+                    ?>
+                    <div class="alert alert-danger" role="alert">
+                        result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                    </div>
+                    <?php
+                }
+            }
+            ?>
+            <div>
+                <form action="store.php" method="post">
+                    <div class="form-group">
+                        <label for="name">Pokémon Name</label>
+                        <input value="<?= $name ?>" required type="text" class="form-control" id="name" name="name" placeholder="Enter Pokémon name">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <input value="<?= $type ?>" required type="text" class="form-control" id="type" name="type" placeholder="Enter Pokémon type">
+                    </div>
+                    <div class="form-group">
+                        <label for="ability">Ability</label>
+                        <input value="<?= $ability ?>" required type="text" class="form-control" id="ability" name="ability" placeholder="Enter Pokémon ability">
+                    </div>
+                    <div class="form-group">
+                        <label for="hp">HP</label>
+                        <input value="<?= $hp ?>" required type="number" class="form-control" id="hp" name="hp" placeholder="Enter Pokémon HP">
+                    </div>
+                    <div class="form-group">
+                        <label for="attack">Attack</label>
+                        <input value="<?= $attack ?>" required type="number" class="form-control" id="attack" name="attack" placeholder="Enter Pokémon attack">
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary">Add Pokémon</button>
+                </form>
+            </div>
+            <hr>
         </div>
     </main>
     <footer class="container">
-        <p>&copy; IZV 2024</p>
+        <p>&copy; Pokédex 2024</p>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

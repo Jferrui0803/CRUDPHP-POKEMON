@@ -1,45 +1,45 @@
 <?php
+
 ini_set('display_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL); 
 
 session_start();
 
-// Conexión a la base de datos
+$user = null;
+if(isset($_SESSION['user'])) {
+    $user = $_SESSION['user'];
+}
+
 try {
-    $connection = new \PDO(
-        'mysql:host=localhost;dbname=pokemons',
-        'root',
-        'FERNANDO',
-        array(
-            PDO::ATTR_PERSISTENT => true,
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
-        )
+    $connection = new PDO(
+      'mysql:host=localhost;dbname=pokemons',
+      'root',
+      'FERNANDO',
+     
+      array(
+        PDO::ATTR_PERSISTENT => true,
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8')
+        
     );
-} catch (PDOException $e) {
-    header('Location: ./');
+} catch(PDOException $e) {
+    header('Location:..');
     exit;
 }
-
-// Obtener lista de Pokémon
-$sql = 'SELECT * FROM pokemon';
-$statement = $connection->prepare($sql);
-
+$sql = 'select * from pokemon order by name, id';
 try {
-    $statement->execute();
-    $pokemons = $statement->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    header('Location: ./');
+    $sentence = $connection->prepare($sql);
+    $sentence->execute();
+} catch(PDOException $e) {
+    //echo '<pre>' . var_export($e, true) . '</pre>';
+    header('Location:..');
     exit;
 }
-
-$connection = null;
 ?>
-
 <!doctype html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>dwes - Lista de Pokémon</title>
+        <title>dwes</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
@@ -51,10 +51,10 @@ $connection = null;
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="..">Home</a>
+                        <a class="nav-link" href="..">home</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="./">Pokemons</a>
+                        <a class="nav-link" href="./">pokemon</a>
                     </li>
                 </ul>
             </div>
@@ -62,44 +62,90 @@ $connection = null;
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">Lista de Pokémon</h4>
+                    <h4 class="display-4">pokemons</h4>
                 </div>
             </div>
             <div class="container">
-                <table class="table">
+                <?php
+                if(isset($_GET['op']) && isset($_GET['result'])) {
+                    if($_GET['result'] > 0) {
+                        ?>
+                        <div class="alert alert-primary" role="alert">
+                            result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                        </div>
+                        <?php 
+                    } else {
+                        ?>
+                        <div class="alert alert-danger" role="alert">
+                            result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                        </div>
+                        <?php
+                        }
+                }
+                ?>
+                <div class="row">
+                    <h3>Pokemon list</h3>
+                </div>
+                <table class="table table-striped table-hover" id="tablaPokemons">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Ability</th>
-                            <th>HP</th>
-                            <th>Attack</th>
-                            <th>Defense</th>
-                            <th>Actions</th>
+                            <th>id</th>
+                            <th>name</th>
+                            <th>type</th>
+                            <th>ability</th>
+                            <th>hp</th>
+                            <th>attack</th>
+                            <th>view</th>
+                            
+                            <?php
+                            if(isset($_SESSION['user'])) {
+                                ?>
+                                <th>delete</th>
+                                <th>edit</th>
+                                <?php
+                            }
+                            ?>
+                            
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pokemons as $pokemon): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($pokemon['id']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['name']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['type']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['ability']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['hp']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['attack']) ?></td>
-                            <td><?= htmlspecialchars($pokemon['defense']) ?></td>
-                            <td>
-                                <a href="edit.php?id=<?= $pokemon['id'] ?>" class="btn ">Edit</a>
-                                <a href="destroy.php?id=<?= $pokemon['id'] ?>" class="btn ">Delete</a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php
+                            while($fila = $sentence->fetch()) { 
+                                ?>
+                                <tr >
+                                    <td><?php echo $fila['id']; ?></td>
+                                    <td><?= $fila['name']; ?></td>
+                                    <td><?= $fila['type']; ?></td>
+                                    <td><?= $fila['ability']; ?></td>
+                                    <td><?= $fila['hp']; ?></td>
+                                    <td><?= $fila['attack']; ?></td>
+                                    
+                                    <td><a href="show.php?id=<?= $fila['id'] ?>">view</a></td>
+                                         
+                                    <?php
+                                    if(isset($_SESSION['user'])) {
+                                        ?>
+                                        <td><a href="destroy.php?id=<?= $fila['id'] ?>">delete</a></td>
+                                        <td><a href="edit.php?id=<?= $fila['id'] ?>">edit</a></td>
+                                        <?php
+                                    }
+                                    ?>
+                                </tr>
+                                <?php
+                            }
+                        ?>
                     </tbody>
                 </table>
-                <div>
-                    <a href="create.php" class="btn btn-success">Add New Pokémon</a>
+                <div class="row">
+                    <?php
+                    if(isset($_SESSION['user'])) {
+                        ?>
+                        <a href="create.php" class="btn btn-success">add pokemon</a>
+                        <?php
+                    }
+                    ?>
                 </div>
+                <hr>
             </div>
         </main>
         <footer class="container">
@@ -107,5 +153,8 @@ $connection = null;
         </footer>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="js/script.js"></script>
     </body>
 </html>
+<?php
+$connection = null;

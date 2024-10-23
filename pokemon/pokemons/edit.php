@@ -4,74 +4,110 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-
-// Verificar si el usuario está autenticado
-if (!isset($_SESSION['user'])) {
-    header('Location: ./');
+if(!isset($_SESSION['user'])) {
+    header('Location:.');
     exit;
 }
+$user = $_SESSION['user'];
 
-// Conexión a la base de datos
 try {
-    $connection = new \PDO(
-        'mysql:host=localhost;dbname=pokemons',
-        'root',
-        'FERNANDO',
-        array(
-            PDO::ATTR_PERSISTENT => true,
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
-        )
+    $connection = new PDO(
+      'mysql:host=localhost;dbname=pokemons',
+      'root',
+      'FERNANDO',
+     
+      array(
+        PDO::ATTR_PERSISTENT => true,
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8')
+        
     );
-} catch (PDOException $e) {
-    header('Location: ../');
+} catch(PDOException $e) {
+    header('Location:..');
     exit;
 }
 
-// Verificar si el parámetro 'id' está presente y es numérico
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $id = (int)$_GET['id'];
+if(isset($_GET['id'])) {
+    $id = $_GET['id'];
 } else {
-    header('Location: ./?op=editpokemon&result=noid');
+    $url = '.?op=editpokemon&result=noid';
+    header('Location: ' . $url);
     exit;
 }
 
-// Preparar la consulta para obtener el Pokémon
-$sql = 'SELECT * FROM pokemon WHERE id = :id';
+
+$sql = 'select * from pokemon where id = :id';
 $sentence = $connection->prepare($sql);
-$sentence->bindValue(':id', $id, PDO::PARAM_INT);
+$parameters = ['id' => $id];
+foreach($parameters as $nombreParametro => $valorParametro) {
+    $sentence->bindValue($nombreParametro, $valorParametro);
+}
 
 try {
-    // Ejecutar la consulta
     $sentence->execute();
-    $row = $sentence->fetch(PDO::FETCH_ASSOC); // Obtener como array asociativo
-} catch (PDOException $e) {
-    header('Location: ./');
+    $row = $sentence->fetch();
+} catch(PDOException $e) {
+    header('Location:.');
     exit;
 }
 
-// Verificar si el Pokémon existe
-if ($row == null) {
-    header('Location: ./');
+if($row == null) {
+    header('Location: .');
     exit;
 }
 
-// Cerrar la conexión
+$name = '';
+$type = '';
+$ability = '';
+$hp = '';
+$attack = '';
+
+if(isset($_SESSION['old']['name'])) {
+    $name = $_SESSION['old']['name'];
+    unset($_SESSION['old']['name']);
+}
+if(isset($_SESSION['old']['type'])) {
+    $type = $_SESSION['old']['type'];
+    unset($_SESSION['old']['type']);
+}
+if(isset($_SESSION['old']['ability'])) {
+    $ability = $_SESSION['old']['ability'];
+    unset($_SESSION['old']['ability']);
+}
+if(isset($_SESSION['old']['hp'])) {
+    $hp = $_SESSION['old']['hp'];
+    unset($_SESSION['old']['hp']);
+}
+if(isset($_SESSION['old']['attack'])) {
+    $attack = $_SESSION['old']['attack'];
+    unset($_SESSION['old']['attack']);
+}
+
+
+
+$id = $row['id'];
+if($name == '') {
+    $name = $row['name'];
+}
+if($type == '') {
+    $type = $row['type'];
+}
+if($ability == '') {
+    $ability = $row['ability'];
+}
+if($hp == '') {
+    $hp = $row['hp'];
+}
+if($attack == '') {
+    $attack = $row['attack'];
+}
+
 $connection = null;
-
-// Variables para mantener los datos del formulario anterior
-$name = isset($_SESSION['old']['name']) ? $_SESSION['old']['name'] : $row['name'];
-$type = isset($_SESSION['old']['type']) ? $_SESSION['old']['type'] : $row['type'];
-$ability = isset($_SESSION['old']['ability']) ? $_SESSION['old']['ability'] : $row['ability'];
-$hp = isset($_SESSION['old']['hp']) ? $_SESSION['old']['hp'] : $row['hp'];
-$attack = isset($_SESSION['old']['attack']) ? $_SESSION['old']['attack'] : $row['attack'];
-$defense = isset($_SESSION['old']['defense']) ? $_SESSION['old']['defense'] : $row['defense'];
-unset($_SESSION['old']);
 ?>
 <!doctype html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Edit Pokemon</title>
+        <title>dwes</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
@@ -83,10 +119,10 @@ unset($_SESSION['old']);
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="..">Home</a>
+                        <a class="nav-link" href="..">home</a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="./">Pokemons</a>
+                        <a class="nav-link" href="./">pokemons</a>
                     </li>
                 </ul>
             </div>
@@ -94,38 +130,55 @@ unset($_SESSION['old']);
         <main role="main">
             <div class="jumbotron">
                 <div class="container">
-                    <h4 class="display-4">Edit Pokemon</h4>
+                    <h4 class="display-4">pokemonss</h4>
                 </div>
             </div>
             <div class="container">
-                <form action="update.php" method="post">
-                    <div class="form-group">
-                        <label for="name">Pokemon Name</label>
-                        <input value="<?= htmlspecialchars($name) ?>" required type="text" class="form-control" id="name" name="name" placeholder="Pokemon Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="type">Pokemon Type</label>
-                        <input value="<?= htmlspecialchars($type) ?>" required type="text" class="form-control" id="type" name="type" placeholder="Pokemon Type">
-                    </div>
-                    <div class="form-group">
-                        <label for="ability">Pokemon Ability</label>
-                        <input value="<?= htmlspecialchars($ability) ?>" required type="text" class="form-control" id="ability" name="ability" placeholder="Pokemon Ability">
-                    </div>
-                    <div class="form-group">
-                        <label for="hp">Pokemon HP</label>
-                        <input value="<?= htmlspecialchars($hp) ?>" required type="number" class="form-control" id="hp" name="hp" placeholder="Pokemon HP">
-                    </div>
-                    <div class="form-group">
-                        <label for="attack">Pokemon Attack</label>
-                        <input value="<?= htmlspecialchars($attack) ?>" required type="number" class="form-control" id="attack" name="attack" placeholder="Pokemon Attack">
-                    </div>
-                    <div class="form-group">
-                        <label for="defense">Pokemon Defense</label>
-                        <input value="<?= htmlspecialchars($defense) ?>" required type="number" class="form-control" id="defense" name="defense" placeholder="Pokemon Defense">
-                    </div>
-                    <input type="hidden" name="id" value="<?= htmlspecialchars($row['id']) ?>" />
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
+            <?php
+                if(isset($_GET['op']) && isset($_GET['result'])) {
+                    if($_GET['result'] > 0) {
+                        ?>
+                        <div class="alert alert-primary" role="alert">
+                            result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                        </div>
+                        <?php 
+                    } else {
+                        ?>
+                        <div class="alert alert-danger" role="alert">
+                            result: <?= $_GET['op'] . ' ' . $_GET['result'] ?>
+                        </div>
+                        <?php
+                        }
+                }
+                ?>
+                <div>
+                    <form action="update.php" method="post">
+                        <div class="form-group">
+                            <label for="name">pokemons name</label>
+                            <input value="<?= $name ?>" required type="text" class="form-control" id="name" name="name" placeholder="pokemon name">
+                        </div>
+                        <div class="form-group">
+                            <label for="type">pokemons type</label>
+                            <input value="<?= $type ?>" required type="text" class="form-control" id="type" name="type" placeholder="pokemon type">
+                        </div>
+                        <div class="form-group">
+                            <label for="ability">pokemons ability</label>
+                            <input value="<?= $ability ?>" required type="text" class="form-control" id="ability" name="ability" placeholder="pokemon ability">
+                        </div>
+                        <div class="form-group">
+                            <label for="hp">pokemons ability</label>
+                            <input value="<?= $hp ?>" required type="text" class="form-control" id="hp" name="hp" placeholder="pokemon hp">
+                        </div>
+                        <div class="form-group">
+                            <label for="attack">pokemons attack</label>
+                            <input value="<?= $attack ?>" required type="text" class="form-control" id="attack" name="attack" placeholder="pokemon attack">
+                        </div>
+                       
+
+                        <input type="hidden" name="id" value="<?= $id ?>" />
+                        <button type="submit" class="btn btn-primary">edit</button>
+                    </form>
+                </div>
                 <hr>
             </div>
         </main>
