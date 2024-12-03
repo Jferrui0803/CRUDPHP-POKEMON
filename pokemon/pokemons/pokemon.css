@@ -1,0 +1,118 @@
+/* style.css */
+
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e6eef8; /* Fondo azul claro y suave */
+    color: #2b2d42; /* Texto gris oscuro */
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+    background-color: #008080; /* Verde azulado inspirado en Bulbasaur */
+    border-bottom: 2px solid #ff4500; /* Rojo anaranjado brillante para contraste */
+}
+
+.navbar-brand {
+    color: #ff4500 !important; /* Texto anaranjado */
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #e6eef8 !important; /* Texto azul claro */
+}
+
+.nav-link:hover {
+    color: #008080 !important;
+    background-color: #ff4500 !important;
+}
+
+/* Estilos para el contenedor principal */
+.container {
+    margin-top: 20px;
+}
+
+/* Estilos para la tabla de Pokémon */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: #fff;
+    border: 1px solid #dddddd; /* Bordes suaves */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    border-radius: 8px; /* Bordes redondeados */
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dddddd;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #ff4500; /* Anaranjado vibrante */
+    background-color: #008080; /* Verde azulado */
+    color: #ffffff; /* Texto blanco */
+    text-transform: uppercase;
+}
+
+.table tbody tr:hover {
+    background-color: #f4f9ff; /* Azul muy claro */
+}
+
+/* Estilos para los botones */
+.btn-primary {
+    background-color: #ff4500; /* Anaranjado vibrante */
+    border-color: #ff4500;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #008080;
+    border-color: #008080;
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background-color: #008080; /* Verde azulado */
+    border-color: #008080;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #ff4500;
+    border-color: #ff4500;
+    color: #ffffff;
+}
+
+/* Estilos para las alertas */
+.alert-primary {
+    background-color: #008080; /* Verde azulado */
+    border-color: #008080;
+    color: #ffffff;
+}
+
+.alert-danger {
+    background-color: #ff4500; /* Anaranjado vibrante */
+    border-color: #ff4500;
+    color: #ffffff;
+}
+
+/* Estilos para el pie de página */
+footer {
+    background-color: #008080; /* Verde azulado */
+    color: #ffffff; /* Texto blanco */
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Asegura que ocupe el 100% del ancho */
+    border-top: 2px solid #ff4500; /* Línea superior anaranjada */
+    box-sizing: border-box; /* Incluye padding y border dentro del ancho */
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
+}
+
